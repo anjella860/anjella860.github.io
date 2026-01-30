@@ -1,0 +1,117 @@
+@charset "utf -8";
+
+* { box-sizing: border-box; }
+body, html { font-family: 'LeeSunSinDotum'; font-weight:300;  }
+body {
+    overflow-x:hidden;
+}
+a { text-decoration: none; color: #333; }
+.wrap { width: 100%; min-width: 320px; }
+.container {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+#hd {
+    border-bottom: 1px solid #ddd;
+}
+
+#hd .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    margin-top: 15px;
+}
+
+.logo img {
+    height: 40px;
+    width: auto;
+}
+
+.gnb:before {
+    content: "";
+    display:block;
+    width:100vw;
+    height:0px;
+    overflow-y:hidden;
+    background-color: #fff;
+    position:absolute;
+    z-index:90;
+    left: 0; 
+    top: 60px;
+    border-bottom: 2px solid #999;
+    transition: 0.6s;
+}
+
+.gnb:hover::before {
+    height: 180px;
+}
+
+.gnb .menu {
+    display: flex;
+    gap: 20px;
+}
+
+.gnb .menu > li {
+    position:relative;
+    min-width: 127px;
+    text-align: center;
+}
+
+.gnb .menu a.dp1 {
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.gnb .menu > li:hover a.dp1 {
+    color: #0A6AA6;
+}
+
+.gnb .sub {
+    position: absolute;
+    top: 33px;
+    left: 0;
+    z-index: 100;
+    background-color: #fff;
+    min-width: 154px;
+    flex-direction: column;
+    transition: 0.6s;
+    height:0px;
+    overflow-y: hidden;
+    display: flex;
+}
+
+.gnb:hover .menu li .sub {
+    height: 180px;
+}
+
+.gnb .menu li:hover .sub {
+    background-color: #ddd;
+}
+
+.gnb .sub li {
+    min-width: 50px;
+    padding: 10px;
+}
+
+.gnb .sub li a{
+    display: block;
+    width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gnb .sub li:hover a {
+    text-decoration: underline;
+}
+
+.tnb a {
+    padding: 4px 4px;
+}
+
+.tnb a:hover {
+    color:#0D0D0D;
+    font-weight: 600;
+}
+
