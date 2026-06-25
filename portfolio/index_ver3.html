@@ -1,0 +1,1337 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOKYUNG::DEV — AI Full Stack Portfolio</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+      :root {
+        --bg: #000510;
+        --fg: #e8f4ff;
+        --accent: #00d4ff;
+        --accent2: #7b2ff7;
+        --muted: #4a7fa5;
+        --panel: rgba(0, 5, 16, 0.86);
+        --line: rgba(0, 212, 255, 0.18);
+        --r: 10px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      html,
+      body {
+        min-height: 100%;
+        overflow-x: hidden;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Rajdhani", "Noto Sans KR", sans-serif;
+      }
+
+      /* CANVAS */
+      #threeCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 28%,
+          rgba(0, 5, 16, 0.78) 100%
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* NAV */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 20;
+        padding: 1.2rem 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        backdrop-filter: blur(10px);
+        background: rgba(0, 5, 16, 0.25);
+      }
+      .logo {
+        font-family: "Orbitron", monospace;
+        font-size: 1.1rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        text-shadow: 0 0 18px rgba(0, 212, 255, 0.35);
+      }
+      .nav-menu {
+        display: flex;
+        gap: 2rem;
+      }
+      .nav-menu a {
+        font-size: 0.85rem;
+        color: rgba(232, 244, 255, 0.62);
+        text-decoration: none;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+        transition: color 0.2s;
+      }
+      .nav-menu a:hover {
+        color: var(--accent);
+      }
+
+      /* HUD */
+      .hud-tl {
+        position: fixed;
+        top: 80px;
+        left: 2rem;
+        z-index: 3;
+        font-family: "Orbitron", monospace;
+        font-size: 0.65rem;
+        color: rgba(0, 212, 255, 0.55);
+        letter-spacing: 0.1em;
+      }
+      .hud-br {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 3;
+        font-family: "Orbitron", monospace;
+        font-size: 0.65rem;
+        color: rgba(0, 212, 255, 0.55);
+        text-align: right;
+        letter-spacing: 0.1em;
+      }
+      .hud-line {
+        display: block;
+        margin: 0.15rem 0;
+      }
+
+      /* COMMON */
+      section {
+        position: relative;
+        z-index: 2;
+      }
+      .sec-label {
+        font-family: "Orbitron", monospace;
+        font-size: 0.72rem;
+        color: var(--accent);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .sec-title {
+        font-family: "Orbitron", monospace;
+        font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+        font-weight: 900;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.5rem;
+      }
+      .sec-sub {
+        color: var(--muted);
+        font-size: 0.98rem;
+        margin-bottom: 3rem;
+        line-height: 1.7;
+      }
+
+      /* HERO */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 7rem 2rem 6rem;
+        position: relative;
+        z-index: 2;
+      }
+      .hero-content {
+        max-width: 980px;
+      }
+      .hero-chip {
+        font-family: "Orbitron", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .chip-line {
+        width: 40px;
+        height: 1px;
+        background: var(--accent);
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+      }
+      .hero h1 {
+        font-family: "Orbitron", monospace;
+        font-size: clamp(2.6rem, 7vw, 5.7rem);
+        font-weight: 900;
+        line-height: 1.08;
+        letter-spacing: 0.02em;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+      }
+      .hero h1 .gl {
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .hero-sub {
+        font-size: 1.12rem;
+        color: rgba(232, 244, 255, 0.68);
+        max-width: 620px;
+        margin: 0 auto 3rem;
+        line-height: 1.75;
+        font-weight: 400;
+      }
+      .hero-btns {
+        display: flex;
+        gap: 1.2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .btn {
+        padding: 0.85rem 2rem;
+        border-radius: var(--r);
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-family: "Orbitron", monospace;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn-cyan {
+        background: transparent;
+        border: 1.5px solid var(--accent);
+        color: var(--accent);
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-cyan::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--accent);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .btn-cyan:hover::before {
+        opacity: 0.1;
+      }
+      .btn-cyan:hover {
+        box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+      }
+      .btn-purple {
+        background: var(--accent2);
+        color: #fff;
+        border: 0;
+      }
+      .btn-purple:hover {
+        background: #6b1fe0;
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px rgba(123, 47, 247, 0.5);
+      }
+
+      /* INTRO */
+      .intro {
+        padding: 6rem 3rem;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          rgba(0, 5, 16, 0.95)
+        );
+      }
+      .intro-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+      .intro-visual {
+        position: relative;
+        min-height: 420px;
+        padding: 12px;
+        border: 1px solid rgba(0, 212, 255, 0.45);
+        background:
+          linear-gradient(
+            135deg,
+            rgba(0, 212, 255, 0.12),
+            rgba(123, 47, 247, 0.08)
+          ),
+          rgba(0, 5, 16, 0.65);
+        border-radius: 24px;
+        box-shadow:
+          0 0 28px rgba(0, 212, 255, 0.18),
+          inset 0 0 18px rgba(0, 21, 255, 0.08);
+        transition:
+          transform 0.35s ease,
+          box-shadow 0.35s ease,
+          border-color 0.35s ease;
+      }
+      .intro-visual::before {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(0, 212, 255, 0.18);
+        border-radius: 18px;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .intro-visual::after {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: linear-gradient(
+          120deg,
+          transparent 35%,
+          rgba(0, 212, 255, 0.22) 50%,
+          transparent 65%
+        );
+        transition: transform 0.7s ease;
+        z-index: 3;
+        pointer-events: none;
+        transform: translate(-100%) rotate(8deg);
+      }
+      .intro-visual:hover::after {
+        transform: translate(70%) rotate(8deg);
+      }
+      .intro-visual img {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        min-height: 420px;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        border-radius: 14px;
+        filter: saturate(1.04) contrast(1.03);
+      }
+      .intro-copy {
+        padding: 1rem 0;
+      }
+      .intro-kicker {
+        font-family: "Orbitron", monospace;
+        color: var(--accent);
+        letter-spacing: 0.2em;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        margin-bottom: 1.4rem;
+      }
+      .intro-main {
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: clamp(1.1rem, 1.6vw, 1.6rem);
+        line-height: 1.6;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 1.4rem;
+      }
+      .intro-main span {
+        color: var(--accent);
+        display: block;
+        margin-top: 0.6rem;
+      }
+      .intro-desc {
+        color: rgba(232, 244, 255, 0.66);
+        font-size: 1rem;
+        line-height: 1.85;
+        max-width: 620px;
+      }
+      .identity-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+      .identity-card {
+        border: 1px solid rgba(0, 212, 255, 0.14);
+        background: rgba(0, 212, 255, 0.035);
+        padding: 1rem;
+        border-radius: var(--r);
+      }
+      .identity-card b {
+        display: block;
+        font-family: "Orbitron", monospace;
+        color: var(--accent);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.4rem;
+      }
+      .identity-card p {
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      /* SKILLS */
+      .skills {
+        padding: 6rem 3rem;
+        background: rgba(0, 5, 16, 0.98);
+      }
+      .skills-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .skill-category {
+        margin-top: 2.5rem;
+      }
+      .skill-category-title {
+        font-family: "Orbitron", monospace;
+        color: rgba(232, 244, 255, 0.82);
+        font-size: 0.9rem;
+        letter-spacing: 0.12em;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+      }
+      .hex-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .hex-item {
+        width: 122px;
+        height: 122px;
+        background: rgba(0, 212, 255, 0.05);
+        border: 1px solid rgba(0, 212, 255, 0.22);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.32rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        clip-path: polygon(
+          50% 0%,
+          100% 25%,
+          100% 75%,
+          50% 100%,
+          0% 75%,
+          0% 25%
+        );
+        color: var(--fg);
+        font-family: inherit;
+      }
+      .hex-item:hover {
+        background: rgba(0, 212, 255, 0.12);
+        border-color: var(--accent);
+        transform: scale(1.08);
+        box-shadow: 0 0 28px rgba(0, 212, 255, 0.18);
+      }
+      .hex-emoji {
+        font-size: 1.8rem;
+        line-height: 1;
+      }
+      .hex-emoji.bi {
+        font-size: 1.6rem;
+        color: var(--accent);
+      }
+      .hex-name {
+        font-family: "Orbitron", monospace;
+        font-size: 0.55rem;
+        color: var(--accent);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-align: center;
+      }
+      .hex-note {
+        font-size: 0.6rem;
+        color: rgba(232, 244, 255, 0.45);
+        letter-spacing: 0.05em;
+      }
+
+      /* PROJECTS */
+      .projects {
+        padding: 6rem 3rem;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 5, 16, 0.98),
+          rgba(0, 5, 16, 0.94),
+          rgba(0, 5, 16, 0.98)
+        );
+      }
+      .projects-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .proj-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        border: 1px solid rgba(0, 212, 255, 0.15);
+        background: rgba(0, 212, 255, 0.05);
+      }
+      .proj-cell {
+        background: rgba(0, 5, 16, 0.85);
+        padding: 2rem;
+        border: 1px solid rgba(0, 212, 255, 0.08);
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        min-height: 250px;
+      }
+      .proj-cell::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 212, 255, 0.06),
+          transparent 60%
+        );
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .proj-cell:hover::before {
+        opacity: 1;
+      }
+      .proj-cell:hover {
+        background: rgba(0, 212, 255, 0.06);
+        border-color: rgba(0, 212, 255, 0.3);
+      }
+      .proj-num {
+        font-family: "Orbitron", monospace;
+        font-size: 2.4rem;
+        font-weight: 900;
+        color: rgba(0, 212, 255, 0.12);
+        margin-bottom: 1rem;
+      }
+      .devicon-github-original.colored { color: #e8f4ff !important; }
+      .proj-status {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-family: "Orbitron", monospace;
+        font-size: 0.58rem;
+        color: rgba(232, 244, 255, 0.58);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+      }
+      .proj-title {
+        font-family: "Orbitron", monospace;
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.04em;
+      }
+      .proj-desc {
+        color: var(--muted);
+        font-size: 0.83rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+      .proj-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .pchip {
+        font-family: "Orbitron", monospace;
+        padding: 0.15rem 0.5rem;
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        color: rgba(0, 212, 255, 0.72);
+        font-size: 0.6rem;
+        letter-spacing: 0.06em;
+      }
+
+      /* CONTACT */
+      .contact {
+        padding: 6rem 3rem;
+        background: rgba(0, 5, 16, 0.99);
+        border-top: 1px solid rgba(0, 212, 255, 0.1);
+      }
+      .contact-inner {
+        max-width: 760px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .contact h2 {
+        font-family: "Orbitron", monospace;
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        font-weight: 900;
+        color: var(--accent);
+        margin-bottom: 1rem;
+      }
+      .contact p {
+        color: var(--muted);
+        margin-bottom: 2.5rem;
+        line-height: 1.7;
+      }
+      .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .contact-item {
+        background: rgba(0, 212, 255, 0.04);
+        border: 1px solid rgba(0, 212, 255, 0.15);
+        padding: 1.2rem;
+        text-align: left;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: block;
+      }
+      .contact-item:hover {
+        border-color: var(--accent);
+        background: rgba(0, 212, 255, 0.08);
+      }
+      .ci-label {
+        font-family: "Orbitron", monospace;
+        font-size: 0.62rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 0.3rem;
+      }
+      .ci-val {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--fg);
+      }
+
+      footer {
+        background: #000;
+        border-top: 1px solid rgba(0, 212, 255, 0.1);
+        padding: 1.5rem 3rem;
+        display: flex;
+        justify-content: space-between;
+        font-family: "Orbitron", monospace;
+        font-size: 0.65rem;
+        color: rgba(0, 212, 255, 0.45);
+        position: relative;
+        z-index: 2;
+        gap: 1rem;
+      }
+
+      /* MODAL */
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: rgba(0, 5, 16, 0.76);
+        backdrop-filter: blur(10px);
+      }
+      .modal.active {
+        display: flex;
+      }
+      .modal-card {
+        width: min(640px, 100%);
+        border: 1px solid rgba(0, 212, 255, 0.28);
+        background: linear-gradient(
+          135deg,
+          rgba(0, 12, 28, 0.96),
+          rgba(8, 3, 24, 0.96)
+        );
+        box-shadow: 0 0 45px rgba(0, 212, 255, 0.18);
+        border-radius: 18px;
+        padding: 2rem;
+        position: relative;
+      }
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        background: rgba(0, 212, 255, 0.04);
+        color: var(--accent);
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.1rem;
+      }
+      .modal-label {
+        font-family: "Orbitron", monospace;
+        color: var(--accent);
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .modal-title {
+        font-family: "Orbitron", monospace;
+        font-size: 1.7rem;
+        color: var(--fg);
+        margin-bottom: 0.8rem;
+      }
+      .modal-body {
+        color: rgba(232, 244, 255, 0.72);
+        line-height: 1.8;
+        font-size: 1rem;
+        white-space: pre-line;
+      }
+      .modal-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1.4rem;
+      }
+      .modal-tag {
+        font-family: "Orbitron", monospace;
+        font-size: 0.62rem;
+        color: rgba(0, 212, 255, 0.78);
+        border: 1px solid rgba(0, 212, 255, 0.28);
+        padding: 0.25rem 0.55rem;
+        border-radius: 999px;
+      }
+
+      @media (max-width: 900px) {
+        nav {
+          padding: 1rem 1.4rem;
+        }
+        .nav-menu {
+          gap: 1rem;
+        }
+        .intro-inner {
+          grid-template-columns: 1fr;
+        }
+        .intro-visual {
+          min-height: 360px;
+        }
+        .intro-visual img {
+          min-height: 360px;
+        }
+        .proj-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 768px) {
+        .hud-tl,
+        .hud-br {
+          display: none;
+        }
+        .hero,
+        .intro,
+        .skills,
+        .projects,
+        .contact {
+          padding-left: 1.25rem;
+          padding-right: 1.25rem;
+        }
+        .nav-menu a {
+          font-size: 0.72rem;
+        }
+        .identity-grid,
+        .contact-grid,
+        .proj-grid {
+          grid-template-columns: 1fr;
+        }
+        .hex-item {
+          width: 94px;
+          height: 94px;
+        }
+        footer {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+      @media (max-width: 520px) {
+        .nav-menu {
+          display: none;
+        }
+        .hero h1 {
+          font-size: 2.35rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="threeCanvas"></canvas>
+    <div class="overlay"></div>
+
+    <div class="hud-tl">
+      <span class="hud-line">PORTFOLIO: ONLINE</span>
+      <span class="hud-line">ROLE: AI_FULLSTACK</span>
+      <span class="hud-line" id="hudTime">TIME: --:--:--</span>
+    </div>
+    <div class="hud-br">
+      <span class="hud-line">LOCATION: SEOUL_KR</span>
+      <span class="hud-line">STATUS: OPEN_TO_WORK</span>
+      <span class="hud-line">FOCUS: AI_SERVICE</span>
+    </div>
+
+    <nav>
+      <div class="logo">BOKYUNG::DEV</div>
+      <div class="nav-menu">
+        <a href="#intro">Intro</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+
+    <section class="hero" id="cover">
+      <div class="hero-content">
+        <div class="hero-chip">
+          <div class="chip-line"></div>
+          AI Full Stack Developer
+          <div class="chip-line"></div>
+        </div>
+        <h1>
+          <span class="gl">AI SERVICE</span><br />FULLSTACK<br />DEVELOPER
+        </h1>
+        <p class="hero-sub">
+          웹 서비스부터 AI 기능까지,<br />실제로 동작하는 프로젝트로 증명합니다.
+        </p>
+        <div class="hero-btns">
+          <a href="#projects" class="btn btn-cyan">View Projects</a>
+          <a href="#contact" class="btn btn-purple">Contact Me</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro" id="intro">
+      <div class="intro-inner">
+        <div class="intro-visual">
+          <!-- 이미지 파일명은 실제 프로젝트 폴더에 맞게 변경해도 됩니다. -->
+          <img src="img.png" alt="전보경 포트폴리오 캐릭터 이미지" />
+        </div>
+        <div class="intro-copy">
+          <div class="intro-kicker">// About Me</div>
+          <h2 class="intro-main">
+            화면부터 AI까지 직접 구현하는,<br />
+            <span>풀스택 개발자로 성장하고 있는 전보경입니다.</span>
+          </h2>
+          <p class="intro-desc">
+            화면, 서버, 데이터 처리 흐름을 함께 이해하며 기능이 실제 서비스
+            안에서 자연스럽게 작동하도록 설계하고 구현하는 개발자를 목표로
+            합니다.
+          </p>
+          <div class="identity-grid">
+            <div class="identity-card">
+              <b>WEB SERVICE</b>
+              <p>사용자 흐름을 고려한 화면과 기능 구현</p>
+            </div>
+            <div class="identity-card">
+              <b>AI FLOW</b>
+              <p>AI 처리 결과를 서비스 기능으로 연결</p>
+            </div>
+            <div class="identity-card">
+              <b>DATA</b>
+              <p>데이터 저장, 조회, 시각화 흐름 이해</p>
+            </div>
+            <div class="identity-card">
+              <b>DASHBOARD</b>
+              <p>실시간 정보 확인을 위한 화면 구성</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="skills" id="skills">
+      <div class="skills-inner">
+        <div class="sec-label">// Tech Stack</div>
+        <h2 class="sec-title">What I Can Build</h2>
+        <p class="sec-sub">
+          기술을 단순히 나열하지 않고, 프로젝트에서 어떤 역할로 활용할 수 있는지
+          보여줍니다. 카드를 클릭하면 상세 설명을 확인할 수 있습니다.
+        </p>
+
+        <div class="skill-category">
+          <div class="skill-category-title">Backend</div>
+          <div class="hex-grid">
+            <button class="hex-item" data-skill="spring">
+              <i class="devicon-spring-plain colored hex-emoji"></i>
+              <div class="hex-name">Spring Boot</div>
+            </button>
+            <button class="hex-item" data-skill="java">
+              <i class="devicon-java-plain colored hex-emoji"></i>
+              <div class="hex-name">Java</div>
+            </button>
+            <button class="hex-item" data-skill="fastapi">
+              <i class="devicon-fastapi-plain colored hex-emoji"></i>
+              <div class="hex-name">FastAPI</div>
+            </button>
+            <button class="hex-item" data-skill="jpa">
+              <i class="devicon-hibernate-plain colored hex-emoji"></i>
+              <div class="hex-name">JPA</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-category-title">Frontend</div>
+          <div class="hex-grid">
+            <button class="hex-item" data-skill="vue">
+              <i class="devicon-vuejs-plain colored hex-emoji"></i>
+              <div class="hex-name">Vue.js</div>
+            </button>
+            <button class="hex-item" data-skill="js">
+              <i class="devicon-javascript-plain colored hex-emoji"></i>
+              <div class="hex-name">JavaScript</div>
+            </button>
+            <button class="hex-item" data-skill="htmlcss">
+              <i class="devicon-html5-plain colored hex-emoji"></i>
+              <div class="hex-name">HTML/CSS</div>
+            </button>
+            <button class="hex-item" data-skill="dashboard">
+              <i class="bi bi-graph-up-arrow hex-emoji"></i>
+              <div class="hex-name">Dashboard</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-category-title">AI & Data</div>
+          <div class="hex-grid">
+            <button class="hex-item" data-skill="python">
+              <i class="devicon-python-plain colored hex-emoji"></i>
+              <div class="hex-name">Python</div>
+            </button>
+            <button class="hex-item" data-skill="opencv">
+              <i class="devicon-opencv-plain colored hex-emoji"></i>
+              <div class="hex-name">OpenCV</div>
+            </button>
+            <button class="hex-item" data-skill="yolo">
+              <i class="bi bi-camera-video hex-emoji"></i>
+              <div class="hex-name">YOLO</div>
+            </button>
+            <button class="hex-item" data-skill="ocr">
+              <i class="bi bi-file-earmark-text hex-emoji"></i>
+              <div class="hex-name">OCR</div>
+            </button>
+            <button class="hex-item" data-skill="rag">
+              <i class="bi bi-filetype-ai hex-emoji"></i>
+              <div class="hex-name">Legal RAG</div>
+              <div class="hex-note">PLANNED</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-category-title">Database & Infra</div>
+          <div class="hex-grid">
+            <button class="hex-item" data-skill="postgres">
+              <i class="devicon-postgresql-plain colored hex-emoji"></i>
+              <div class="hex-name">PostgreSQL</div>
+            </button>
+            <button class="hex-item" data-skill="docker">
+              <i class="devicon-docker-plain colored hex-emoji"></i>
+              <div class="hex-name">Docker</div>
+            </button>
+            <button class="hex-item" data-skill="git">
+              <i class="devicon-github-original colored hex-emoji"></i>
+              <div class="hex-name">GitHub</div>
+            </button>
+            <button class="hex-item" data-skill="raspberry">
+              <i class="devicon-raspberrypi-plain colored hex-emoji"></i>
+              <div class="hex-name">Raspberry Pi</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="projects" id="projects">
+      <div class="projects-inner">
+        <div class="sec-label">// Projects</div>
+        <h2 class="sec-title">Project Gallery</h2>
+        <p class="sec-sub">
+          개인 프로젝트와 팀 프로젝트를 실제 구현 흐름 중심으로 정리합니다.
+        </p>
+        <div class="proj-grid">
+          <a class="proj-cell" href="https://github.com/angela860807/Traffic_Analytics_Proposal" target="_blank" style="text-decoration:none; color:inherit;">
+            <span class="proj-status">TEAM</span>
+            <div class="proj-num">01</div>
+            <div class="proj-title">TAS_TRAFFIC_AI</div>
+            <div class="proj-desc">
+              차량 인식, 속도 산출, 번호판 OCR, 과속 판정, 대시보드를 연결한
+              교통 분석 시스템.
+            </div>
+            <div class="proj-chips">
+              <span class="pchip">FASTAPI</span><span class="pchip">YOLO</span
+              ><span class="pchip">OCR</span><span class="pchip">VUE</span>
+            </div>
+          </a>
+          <div class="proj-cell" style="opacity:0.5; cursor:default;">
+            <span class="proj-status">PERSONAL</span>
+            <div class="proj-num">02</div>
+            <div class="proj-title">SHOPPING_MALL</div>
+            <div class="proj-desc">
+              상품 목록, 장바구니, 주문, 관리자 기능을 포함한 쇼핑몰 웹
+              애플리케이션.
+            </div>
+            <div class="proj-chips">
+              <span class="pchip">SPRING</span><span class="pchip">VUE</span
+              ><span class="pchip">POSTGRESQL</span><span class="pchip">REPO SOON</span>
+            </div>
+          </div>
+          <a class="proj-cell" href="https://github.com/angela860807/gangwon" target="_blank" style="text-decoration:none; color:inherit;">
+            <span class="proj-status">PERSONAL</span>
+            <div class="proj-num">03</div>
+            <div class="proj-title">CULTURE_TOUR</div>
+            <div class="proj-desc">
+              지역 문화 관광 정보를 제공하는 웹 애플리케이션 화면 및 서버 구현.
+            </div>
+            <div class="proj-chips">
+              <span class="pchip">SPRING</span
+              ><span class="pchip">THYMELEAF</span
+              ><span class="pchip">CSS</span>
+            </div>
+          </a>
+          <div class="proj-cell">
+            <span class="proj-status">PLANNED</span>
+            <div class="proj-num">04</div>
+            <div class="proj-title">LEGAL_RAG_SEARCH</div>
+            <div class="proj-desc">
+              법률 문서를 기반으로 검색하고 근거를 함께 제시하는 RAG 문서 검색
+              시스템.
+            </div>
+            <div class="proj-chips">
+              <span class="pchip">RAG</span><span class="pchip">LLM</span
+              ><span class="pchip">VECTOR DB</span>
+            </div>
+          </div>
+          <div class="proj-cell">
+            <span class="proj-status">PLANNED</span>
+            <div class="proj-num">05</div>
+            <div class="proj-title">AI_MEETING_NOTE</div>
+            <div class="proj-desc">
+              회의 내용을 정리하고 핵심 안건, 결정 사항, 할 일을 자동으로
+              생성하는 AI 회의록 서비스.
+            </div>
+            <div class="proj-chips">
+              <span class="pchip">LLM</span><span class="pchip">SUMMARY</span
+              ><span class="pchip">WEB</span>
+            </div>
+          </div>
+          <div class="proj-cell">
+            <span class="proj-status">EXPAND</span>
+            <div class="proj-num">06</div>
+            <div class="proj-title">NEXT_PROJECT</div>
+            <div class="proj-desc">
+              추가 프로젝트 또는 포트폴리오 상세 페이지를 연결할 수 있는 확장
+              카드.
+            </div>
+            <div class="proj-chips"><span class="pchip">IN PROGRESS</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="contact-inner">
+        <h2>CONTACT_ME</h2>
+        <p>
+          프로젝트, 채용, 협업 관련 연락을 환영합니다.
+        </p>
+        <div class="contact-grid">
+          <a class="contact-item" href="mailto:anjella860@gmail.com"
+            ><div class="ci-label">// Email</div>
+            <div class="ci-val">anjella860@gmail.com</div></a
+          >
+          <a class="contact-item" href="https://github.com/anjella860" target="_blank"
+            ><div class="ci-label">// GitHub · Personal</div>
+            <div class="ci-val">github.com/anjella860</div></a
+          >
+          <a class="contact-item" href="https://github.com/angela860807" target="_blank"
+            ><div class="ci-label">// GitHub · Team Projects</div>
+            <div class="ci-val">github.com/angela860807</div></a
+          >
+          <a class="contact-item" style="opacity:0.35; pointer-events:none; cursor:default;"
+            ><div class="ci-label">// Blog · Notion</div>
+            <div class="ci-val">Coming Soon</div></a
+          >
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 BOKYUNG::DEV</span>
+      <span>BUILD: AI_FULLSTACK_PORTFOLIO · SEOUL_KR</span>
+    </footer>
+
+    <div class="modal" id="skillModal" aria-hidden="true">
+      <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <button
+          class="modal-close"
+          id="modalClose"
+          type="button"
+          aria-label="닫기"
+        >
+          ×
+        </button>
+        <div class="modal-label">// Skill Detail</div>
+        <h3 class="modal-title" id="modalTitle">Skill</h3>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-tags" id="modalTags"></div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // HUD Clock
+      function updateHudTime() {
+        const now = new Date();
+        const hud = document.getElementById("hudTime");
+        if (hud) hud.textContent = "TIME: " + now.toTimeString().slice(0, 8);
+      }
+      updateHudTime();
+      setInterval(updateHudTime, 1000);
+
+      // Skill modal data
+      const skillData = {
+        spring: {
+          title: "Spring Boot",
+          body: "계층형 MVC 구조를 기반으로 웹 서비스의 서버 로직을 구성할 수 있습니다.\n회원, 상품, 주문, 관리자 기능처럼 서비스의 핵심 흐름을 API 또는 서버 화면과 연결하는 데 활용합니다.",
+          tags: ["Backend", "MVC", "API"],
+        },
+        java: {
+          title: "Java",
+          body: "객체지향 구조를 바탕으로 서비스 로직을 구현하고, 유지보수 가능한 코드 구조를 설계하는 데 활용합니다.",
+          tags: ["OOP", "Backend", "Logic"],
+        },
+        fastapi: {
+          title: "FastAPI",
+          body: "AI 처리 서버와 데이터 수신 API를 빠르게 구성할 수 있습니다.\nTAS 프로젝트에서는 영상 분석 결과, OCR 결과, 속도 산출 데이터를 처리하고 저장하는 흐름에 활용했습니다.",
+          tags: ["AI Server", "API", "Python"],
+        },
+        jpa: {
+          title: "JPA",
+          body: "데이터베이스 테이블과 Java 객체를 연결해 CRUD 흐름을 구현할 수 있습니다.\n서비스 데이터 구조를 이해하고 안정적으로 저장/조회하는 데 활용합니다.",
+          tags: ["ORM", "Database", "CRUD"],
+        },
+        vue: {
+          title: "Vue.js",
+          body: "컴포넌트 기반으로 화면을 구성하고 API 데이터를 사용자 화면에 연결할 수 있습니다.\n대시보드, 관리자 화면, 목록/상세 화면 구성에 활용합니다.",
+          tags: ["Frontend", "Component", "SPA"],
+        },
+        js: {
+          title: "JavaScript",
+          body: "사용자 이벤트 처리, 동적 화면 제어, API 통신 등 웹 화면의 상호작용을 구현하는 데 활용합니다.",
+          tags: ["Interaction", "DOM", "ES6+"],
+        },
+        htmlcss: {
+          title: "HTML / CSS",
+          body: "정보 구조를 명확하게 잡고, 반응형 레이아웃과 사용자 경험을 고려한 화면을 구성할 수 있습니다.",
+          tags: ["Markup", "Responsive", "UI"],
+        },
+        dashboard: {
+          title: "Dashboard UI",
+          body: "데이터를 사용자가 이해하기 쉬운 형태로 시각화하고, 관리자 기능과 실시간 상태 확인 화면을 구성합니다.",
+          tags: ["Visualization", "Admin", "UX"],
+        },
+        python: {
+          title: "Python",
+          body: "데이터 처리, AI 모델 추론, 이미지 처리, API 서버 구현 등 AI 서비스 흐름의 핵심 로직에 활용합니다.",
+          tags: ["Data", "AI", "Automation"],
+        },
+        opencv: {
+          title: "OpenCV",
+          body: "이미지 전처리, 객체 영역 처리, 번호판 인식 전처리 등 컴퓨터 비전 파이프라인을 구성하는 데 활용합니다.",
+          tags: ["Computer Vision", "Image Processing"],
+        },
+        yolo: {
+          title: "YOLO",
+          body: "영상 또는 이미지에서 차량, 보행자 등 객체를 탐지하는 데 활용합니다.\nTAS 프로젝트에서는 차량 탐지와 추적 흐름의 기반 기술로 사용했습니다.",
+          tags: ["Object Detection", "Vision", "AI"],
+        },
+        ocr: {
+          title: "OCR",
+          body: "이미지 속 문자 정보를 추출해 서비스 데이터로 연결합니다.\n번호판 인식처럼 실제 화면에서 필요한 정보를 데이터화하는 데 활용했습니다.",
+          tags: ["Text Recognition", "PaddleOCR", "Preprocessing"],
+        },
+        rag: {
+          title: "Legal RAG Search",
+          body: "법률 문서를 기반으로 질문에 맞는 근거 문서를 검색하고 답변을 생성하는 개인 프로젝트로 확장할 예정입니다.\n검색 정확도와 근거 제시 흐름을 함께 보여주는 서비스가 목표입니다.",
+          tags: ["Planned", "RAG", "Legal", "LLM"],
+        },
+        postgres: {
+          title: "PostgreSQL",
+          body: "서비스 데이터를 관계형 구조로 모델링하고 저장/조회하는 데 활용합니다.\n프로젝트의 사용자, 로그, 분석 결과 데이터를 관리하는 기반이 됩니다.",
+          tags: ["RDBMS", "Modeling", "SQL"],
+        },
+        docker: {
+          title: "Docker",
+          body: "개발 환경을 컨테이너로 구성하고, 서버 실행 환경을 일관되게 관리하는 데 활용합니다.",
+          tags: ["Infra", "Container", "Deploy"],
+        },
+        git: {
+          title: "Git / GitHub",
+          body: "버전 관리, 브랜치 작업, 프로젝트 기록 정리, 협업 흐름 관리에 활용합니다.",
+          tags: ["Version Control", "Collaboration"],
+        },
+        raspberry: {
+          title: "Raspberry Pi",
+          body: "카메라 기반 데이터 수집, IoT 장비 연동, 엣지 환경에서의 데이터 송신 흐름을 이해하는 데 활용했습니다.",
+          tags: ["IoT", "Edge", "Camera"],
+        },
+      };
+
+      const modal = document.getElementById("skillModal");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalBody = document.getElementById("modalBody");
+      const modalTags = document.getElementById("modalTags");
+      const modalClose = document.getElementById("modalClose");
+
+      document.querySelectorAll("[data-skill]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const data = skillData[btn.dataset.skill];
+          if (!data) return;
+          modalTitle.textContent = data.title;
+          modalBody.textContent = data.body;
+          modalTags.innerHTML = data.tags
+            .map((tag) => `<span class="modal-tag">${tag}</span>`)
+            .join("");
+          modal.classList.add("active");
+          modal.setAttribute("aria-hidden", "false");
+        });
+      });
+      function closeModal() {
+        modal.classList.remove("active");
+        modal.setAttribute("aria-hidden", "true");
+      }
+      modalClose.addEventListener("click", closeModal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+      });
+
+      // Three.js neural network background
+      const canvas = document.getElementById("threeCanvas");
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        60,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000,
+      );
+      camera.position.z = 80;
+
+      const nodeCount = 200;
+      const nodeGeo = new THREE.BufferGeometry();
+      const positions = new Float32Array(nodeCount * 3);
+      const nodeData = [];
+      for (let i = 0; i < nodeCount; i++) {
+        const x = (Math.random() - 0.5) * 150;
+        const y = (Math.random() - 0.5) * 100;
+        const z = (Math.random() - 0.5) * 80;
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+        nodeData.push({
+          x,
+          y,
+          z,
+          vx: (Math.random() - 0.5) * 0.08,
+          vy: (Math.random() - 0.5) * 0.06,
+          vz: (Math.random() - 0.5) * 0.04,
+        });
+      }
+      nodeGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      const nodeMat = new THREE.PointsMaterial({
+        color: 0x00d4ff,
+        size: 1.2,
+        transparent: true,
+        opacity: 0.8,
+      });
+      const nodes = new THREE.Points(nodeGeo, nodeMat);
+      scene.add(nodes);
+
+      const lineGeo = new THREE.BufferGeometry();
+      const linePositions = [];
+      const maxDist = 30;
+      for (let i = 0; i < nodeCount; i++) {
+        for (let j = i + 1; j < nodeCount; j++) {
+          const dx = nodeData[i].x - nodeData[j].x,
+            dy = nodeData[i].y - nodeData[j].y,
+            dz = nodeData[i].z - nodeData[j].z;
+          if (Math.sqrt(dx * dx + dy * dy + dz * dz) < maxDist) {
+            linePositions.push(nodeData[i].x, nodeData[i].y, nodeData[i].z);
+            linePositions.push(nodeData[j].x, nodeData[j].y, nodeData[j].z);
+          }
+        }
+      }
+      lineGeo.setAttribute(
+        "position",
+        new THREE.BufferAttribute(new Float32Array(linePositions), 3),
+      );
+      const lineMat = new THREE.LineBasicMaterial({
+        color: 0x004466,
+        transparent: true,
+        opacity: 0.25,
+      });
+      const lines = new THREE.LineSegments(lineGeo, lineMat);
+      scene.add(lines);
+
+      let mouseX = 0,
+        mouseY = 0;
+      document.addEventListener("mousemove", (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.005;
+        nodes.rotation.y = t * 0.1 + mouseX * 0.15;
+        nodes.rotation.x = mouseY * 0.08;
+        lines.rotation.y = t * 0.1 + mouseX * 0.15;
+        lines.rotation.x = mouseY * 0.08;
+        renderer.render(scene, camera);
+      }
+      animate();
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
+</html>
